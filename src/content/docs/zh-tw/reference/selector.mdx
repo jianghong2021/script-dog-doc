@@ -1,0 +1,53 @@
+---
+title: CSS 選擇器
+description: CSS 選擇器介紹
+---
+import { Aside } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+
+考慮到有的兄弟沒有web編程經驗，玩轉此應用的第一個難題就是：**什麼是T*D選擇器！**
+這玩意就是網頁中用來查找元素的一種方式，我們需要先使用瀏覽器自帶的調試工具（F12或右鍵菜單*檢查*，
+所謂CSS就是樣式表，我們設置樣式就是設置它。
+有的網頁可能屏蔽右鍵菜單和F12，`瀏覽器菜單->更多工具->開發者工具`）檢查當前元素，再根據元素的信息進行查找。
+
+![template](/script-dog-doc/imgs/chrome-tools.jpg)
+
+檢查元素
+
+![template](/script-dog-doc/imgs/inspect-el.jpg)
+
+<Aside>
+    開發內容腳本需要配合瀏覽器`開發者工具`使用，`注意所有符號均以英文模式`，選擇器之間可以聯合使用，
+    通常選擇會匹配所有符合規則的元素。
+</Aside>
+
+### 元素名選擇
+根據元素的類名進行篩選，`元素名`
+
+檢查結果:
+<Code lang='html' code='<div>xxx</div>'/>
+選擇器:
+<Code lang='css' code='div'/>
+### 類名選擇
+根據元素的類名進行篩選，`.類名`
+
+檢查結果:
+<Code lang='html' code='<div class="box">xxx</div>'/>
+選擇器:
+<Code lang='css' code='.box'/>
+
+### 屬性選擇
+根據元素的屬性進行篩選，`[屬性="屬性值"]`
+
+檢查結果:
+<Code lang='html' code='<div class="box" title="hello">xxx</div>'/>
+選擇器:
+<Code lang='css' code='[title="hello"] /**或者**/ .box[title="hello"]'/>
+
+### 子元素選擇
+根據元素的屬性進行篩選，`父選擇器 空格 子選擇器` 表示所有子元素 ，`父選擇器 > 子選擇器` 表示 第一層子元素
+
+檢查結果:
+<Code lang='html' code='<div class="box"><span class="child">world</span></div>'/>
+選擇器:
+<Code lang='css' code='.box .world /**或者**/ .box>.world'/>

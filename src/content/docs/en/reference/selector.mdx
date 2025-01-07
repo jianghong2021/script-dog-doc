@@ -1,0 +1,53 @@
+---
+title: CSS Selectors
+description: Introduction to CSS Selectors
+---
+import { Aside } from '@astrojs/starlight/components';
+import { Code } from '@astrojs/starlight/components';
+
+Considering that some of you may not have web programming experience, the first challenge in using this application is: **What is a T*D selector!**
+This is a way to find elements on a webpage. We need to use the browser's built-in debugging tools (F12 or right-click menu *Inspect*).
+CSS stands for Cascading Style Sheets, and we set styles by setting it.
+Some webpages may block the right-click menu and F12, `Browser Menu -> More Tools -> Developer Tools`) to inspect the current element, and then find it based on the element's information.
+
+![template](/script-dog-doc/imgs/chrome-tools.jpg)
+
+Inspect Element
+
+![template](/script-dog-doc/imgs/inspect-el.jpg)
+
+<Aside>
+    Developing content scripts requires using the browser's `Developer Tools`. `Note that all symbols are in English mode`. Selectors can be combined,
+    and usually, the selection will match all elements that meet the rules.
+</Aside>
+
+### Element Name Selector
+Filter by element name, `element name`
+
+Inspection result:
+<Code lang='html' code='<div>xxx</div>'/>
+Selector:
+<Code lang='css' code='div'/>
+### Class Name Selector
+Filter by class name, `.class name`
+
+Inspection result:
+<Code lang='html' code='<div class="box">xxx</div>'/>
+Selector:
+<Code lang='css' code='.box'/>
+
+### Attribute Selector
+Filter by attribute, `[attribute="attribute value"]`
+
+Inspection result:
+<Code lang='html' code='<div class="box" title="hello">xxx</div>'/>
+Selector:
+<Code lang='css' code='[title="hello"] /**or**/ .box[title="hello"]'/>
+
+### Child Element Selector
+Filter by attribute, `parent selector space child selector` means all child elements, `parent selector > child selector` means the first level child elements
+
+Inspection result:
+<Code lang='html' code='<div class="box"><span class="child">world</span></div>'/>
+Selector:
+<Code lang='css' code='.box .world /**or**/ .box>.world'/>

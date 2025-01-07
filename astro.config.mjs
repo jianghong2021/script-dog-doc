@@ -71,6 +71,15 @@ export default defineConfig({
 					},
 					items:[
 						{
+							label: 'Selector',
+							slug: 'reference/selector',
+							translations:{
+								'zh-CN': 'CSS选择器',
+								'en': 'CSS Selector',
+								'zh-TW': 'CSS選擇器',
+							},
+						},
+						{
 							label: 'Template',
 							slug: 'reference/template',
 							translations:{
