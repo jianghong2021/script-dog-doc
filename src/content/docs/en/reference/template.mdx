@@ -1,0 +1,56 @@
+---
+title: Template
+description: Introduction to Template Usage
+---
+
+import { Code } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+Visual template creation and usage, variable insertion, variable assignment.
+
+![template](/imgs/tpl.jpg)
+
+### Add Template
+Enter keywords (key names, only letters, underscores, numbers are supported) to create a new template
+### Delete Template
+Delete from local, any references in the code will fail thereafter.
+### Edit Template
+    - #### Toolbar
+        Drag elements from it to the canvas to create elements.
+
+        ![template](/imgs/tpl-tools.jpg)
+
+    - #### Canvas
+
+        ![template](/imgs/tpl-canvas.jpg)
+
+        <Steps>
+        1. Click to select elements
+        2. Double-click to modify the text in the elements.
+        3. Modify the text in the elements to <Code lang='js' code='${args.xx}'/> to use code variables
+        </Steps>
+    - #### Property Panel
+        - Style - Modify element style
+
+            ![template](/imgs/tpl-style.jpg)
+
+        - Features
+
+            ![template](/imgs/tpl-tx.jpg)
+
+            - ID - The unique name of the element on the webpage, cannot be duplicated.
+            - Title - The text that is displayed when the mouse hovers over it
+            - ScriptDog Event - Bind event function name to the element, only valid for functions that are publicly available in the code.
+            - ScriptDog Parameters - Specify parameters for the event function, if empty, it will be the default event object.
+
+        - Selector
+
+            ![template](/imgs/tpl-selector.jpg)
+
+            <Steps>
+            1. The selector needs to be used with styles, enter the selector name (letters, numbers, hyphens, underscores) and click add, the selector name can be repeated and share styles.
+            2. After selecting the status in the upper right corner, then set the element style
+                - hover - The style is displayed only when the mouse hovers
+                - click - Displayed when clicked
+                - even/odd - Displayed only for odd/even numbers in the same selector name list
+            </Steps>

@@ -1,0 +1,58 @@
+---
+title: 模板
+description: 模板使用介绍
+---
+
+import { Code } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+可视化模板创建与使用，变量插入，变量赋值。
+
+![template](/imgs/tpl.jpg)
+
+### 添加模板
+输入关键词(键名，仅支持字母，下划线，数字)以创建新模板
+### 删除模板
+从本地删除，此后代码中如有引用将会失败。
+### 编辑模板
+    - #### 工具栏
+        从中拖动元素到画板以创建元素。
+
+        ![template](/imgs/tpl-tools.jpg)
+
+    - #### 画板
+
+        ![template](/imgs/tpl-canvas.jpg)
+
+        <Steps>
+        1. 点击选择元素
+        2. 双击可修改元素中的文字。
+        3. 修改元素中文本为<Code lang='js' code='${args.xx}'/>以使用代码变量
+        </Steps>
+    - #### 属性面板
+        - 样式 - 修改元素样式
+
+            ![template](/imgs/tpl-style.jpg)
+
+        - 特性
+
+            ![template](/imgs/tpl-tx.jpg)
+
+            - ID - 元素在网页中的唯一名称，不能重复。
+            - 标题 - 即为鼠标悬浮时延迟显示的文字
+            - 脚本狗事件 - 给元素绑定事件函数名，仅对代码中已公开的函数有效。
+            - 脚本狗参数 - 给事件函数指定参数，为空将为默认事件对象。
+
+        - 选择器
+
+            ![template](/imgs/tpl-selector.jpg)
+
+            <Steps>
+            1. 选择器需要配合样式使用，输入选择器名称(字母，数字，中划线，下划线)点击添加即可，选择名称可以重复并共享样式。
+            2. 选择右上角状态后，再去设置元素样式
+                - hover - 鼠标悬浮时才会显示样式
+                - click - 被点击时显示
+                - even/odd - 同一个选择器名称列表下，单数或双数才会显示
+            </Steps>
+
+            -

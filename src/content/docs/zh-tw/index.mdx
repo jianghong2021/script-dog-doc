@@ -1,0 +1,36 @@
+---
+title: 歡迎使用腳本狗
+description: 使用可視化腳本開發瀏覽器插件，是否已經蠢蠢欲試了？
+template: splash
+hero:
+  tagline: 基於blockly的可視化腳本創建有趣的瀏覽器插件!
+  image:
+    file: ../../../assets/code-demo.jpg
+  actions:
+    - text: 詳細玩法
+      link: /zh-tw/guides/start/
+      icon: right-arrow
+    - text: 立即下載插件試試
+      link: https://starlight.astro.build
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## 高能亮點
+
+<CardGrid >
+    <Card title="入門簡單" icon="open-book">
+        幾乎不需要編程基礎
+    </Card>
+    <Card title="可視化腳本" icon="pencil">
+        基於 `blockly` 的塊腳本編程
+    </Card>
+    <Card title="多種運行方式" icon="seti:happenings">
+        支持內容腳本，側邊欄開發，獨立窗口等
+    </Card>
+    <Card title="兼容第三方用戶腳本" icon="external">
+        篡改猴,腳本貓等
+    </Card>
+</CardGrid>

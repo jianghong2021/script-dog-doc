@@ -1,0 +1,43 @@
+---
+title: Quick Start
+description: Quickly experience ScriptDog
+
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+Try to quickly experience ScriptDog by starting a new project (or importing an existing one), and run it after completing the programming.
+
+<Steps>
+1. #### Manage Page
+    - Click the plugin icon, or find *ScriptDog* in the right-click menu
+2. #### Fill in Project Information
+    - Name - Project name
+    - Description - Project description
+    - Type - *Content Script*, runs on the specified webpage, used to fully customize the current webpage, and can access all ScriptDog functions. *Independent Window*, runs the script in an isolated window. *Sidebar*, same as Independent Window.
+        <Aside>
+            Currently, *Independent Window* and *Sidebar* run in an isolated sandbox that can access all ScriptDog module functions but cannot access user devices (recording, video recording)
+        </Aside>
+    - ScriptDog Modules - Check if using ScriptDog modules.
+    - GM Modules - If importing GM scripts (Tampermonkey, etc.), it will be checked by default.
+    - Project Window - Only effective when the type is *Independent Window*, configure the position, size, etc. when the independent window starts.
+    - Content Script - Effective when the type is *Content Script*
+        - Match - Specify which webpages the content script runs on, matched by URL, default `*://*/*`, matches all webpages. For example: `https://*.baidu/*` matches all Baidu websites, `https://tieba.baidu.com/*` only matches Tieba.
+        - Run Timing - Specify when the script runs
+            - Document Start - Runs before all scripts of the webpage itself, at this time it may not be able to operate elements.
+            - Document End - Runs after the webpage is ready, at this time some resources of the webpage itself (images, videos, etc.) have not been loaded.
+            - Document Idle - Runs when the webpage is fully ready and idle. At this time, all operations are feasible.
+3. #### Edit Project
+    - Delete - Delete locally, does not affect the cloud.
+    - Edit - Modify project information
+    - Template - Configure templates for the project, creating elements through code is too troublesome? Then try it!
+    - Coding - Script development, default is blockly visual script, if you have programming experience you can also choose text programming mode.
+    - Run - Run *Independent Window*, *Sidebar*, *Content Script* does not need to be run manually, just open the matching webpage.
+    - Download - Package the project and download it to the disk for sharing with others.
+3. #### Import Project
+    - ScriptDog's own project, the xxx.json file obtained from the above *Download*.
+    - GM script, the xxx.js file of the Tampermonkey script obtained from the third party.
+4. #### Refresh Project
+    - Only for content scripts, need to refresh to take effect after the script is modified.
+</Steps>

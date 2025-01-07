@@ -1,0 +1,36 @@
+---
+title: Welcome to ScriptDog
+description: Are you eager to develop browser plugins using visual scripts?
+template: splash
+hero:
+  tagline: Create fun browser plugins with visual scripts based on Blockly!
+  image:
+    file: ../../../assets/code-demo.jpg
+  actions:
+    - text: Detailed Guide
+      link: /en/guides/start/
+      icon: right-arrow
+    - text: Download the Plugin and Try It Now
+      link: https://starlight.astro.build
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Highlights
+
+<CardGrid >
+    <Card title="Easy to Start" icon="open-book">
+        Almost no programming background required
+    </Card>
+    <Card title="Visual Scripts" icon="pencil">
+        Block script programming based on `blockly`
+    </Card>
+    <Card title="Multiple Running Modes" icon="seti:happenings">
+        Supports content scripts, sidebar development, independent windows, etc.
+    </Card>
+    <Card title="Compatible with Third-Party User Scripts" icon="external">
+        Tampermonkey, ScriptCat, etc.
+    </Card>
+</CardGrid>
