@@ -1,13 +1,18 @@
 const extensionUrl = {
-    chrome: 'https://chromewebstore.google.com/detail/%E8%84%9A%E6%9C%AC%E7%8B%97/peoieokehoempafaofbiahjgeecfmmlb'
+    chrome: 'https://chromewebstore.google.com/detail/kpilimchjedgnlefadbjcpknhnlgnhmp',
+    edge: 'https://microsoftedge.microsoft.com/addons/detail/phpfefdnepkjdihobpdegfpnghnkcdka'
 }
 
-function isChrome() {
-    return window.navigator.userAgent.indexOf('Chrome') > -1
+function isEdge() {
+    return window.navigator.userAgent.toLowerCase().indexOf('edg') > -1
 }
 
 function goDownloadPage() {
-    window.open(extensionUrl.chrome, '_blank')
+    if(isEdge()){
+        window.open(extensionUrl.edge, '_blank')
+    }else{
+        window.open(extensionUrl.chrome, '_blank')
+    }
 }
 
 function installScript(url) {
