@@ -41,16 +41,6 @@ export default defineConfig({
 						'zh-TW': '指南',
 					},
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{
-							label: '快速开始',
-							slug: 'guides/start',
-							translations:{
-								'zh-CN': '快速开始',
-								'en': 'Quick Start',
-								'zh-TW': '快速開始',
-							},
-						},
 						{
 							label: 'Examples',
 							slug: 'guides/example',
@@ -58,6 +48,15 @@ export default defineConfig({
 								'zh-CN': '示例',
 								'en': 'Examples',
 								'zh-TW': '示例',
+							},
+						},
+						{
+							label: '快速开始',
+							slug: 'guides/start',
+							translations:{
+								'zh-CN': '快速开始',
+								'en': 'Quick Start',
+								'zh-TW': '快速開始',
 							},
 						},
 					],
