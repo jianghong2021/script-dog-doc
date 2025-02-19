@@ -15,8 +15,8 @@ export default defineConfig({
 			favicon: '/logo.png',
 			defaultLocale: 'root',
 			social: {
-				github: 'https://github.com/jianghong2021',
-				'x.com': 'https://x.com/hong_jiang70969',
+				email: 'mailto:jianghong2020@qq.com?subject=咨询信息&body=您好，我想咨询一些产品信息。',
+				telegram: 'https://t.me/jbg_dev',
 			},
 			locales: {
 				root: {
