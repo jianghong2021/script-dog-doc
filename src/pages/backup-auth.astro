@@ -1,5 +1,5 @@
 <script>
-    const params = location.href.split("#")[1];
+    const params = location.href.split("#")[1] || location.search.split("?")[1];
     if (params) {
         dog.backupAuth(params);
     }
