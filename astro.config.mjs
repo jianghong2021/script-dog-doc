@@ -8,9 +8,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: {
-				'zh-CN': '脚本狗',
-				'en': 'Script Dog',
-				'zh-TW': '腳本狗',
+				'zh-CN': '脚本盒子',
+				'en': 'Script Box',
+				'zh-TW': '腳本盒子',
 			},
 			favicon: '/logo.png',
 			defaultLocale: 'root',
