@@ -1,0 +1,178 @@
+---
+title: Dog 模組 API  
+description: 適用於具備 JavaScript 基礎的開發者，相容於大部分 Tampermonkey GM API，命名空間包含 GM.*、GM_*、通用 API。  
+
+---
+
+適用於具備 JavaScript 基礎的開發者，命名空間包含 Dog.xx、GM.xx、GM_xx、通用 API。  
+
+### getValue  
+取得快取資料，此快取為全域性，所有網站共用。  
+``` javascript
+const val1 = Dog.getValue('key');
+const val2 = Dog.getValue('key','defaultValue');
+```
+
+### setValue  
+設定快取資料，此快取為全域性，所有網站共用。  
+``` javascript
+Dog.setValue('key','myVal');
+```
+### deleteValue  
+刪除快取資料  
+``` javascript
+Dog.deleteValue('key');
+```
+### listValues  
+列出快取資料，以鍵值對物件形式回傳  
+``` javascript
+const obj = Dog.listValues();
+```
+### getResourceUrl  
+取得專案引用資源的連結，引用資源請參考專案編輯。  
+``` javascript
+const url = Dog.getResourceUrl();
+```
+### getResourceText  
+取得專案引用資源的文字內容，引用資源請參考專案編輯。  
+``` javascript
+const text = Dog.getResourceText();
+```
+### openInTab  
+開啟新分頁  
+``` javascript
+Dog.openInTab('https://baidu.com');
+```
+### notification  
+建立系統通知  
+``` javascript
+Dog.notification(text: string, title?: string, image?: string);
+```
+
+### registerMenuCommand  
+註冊選單，與 GM 有所不同，不會真正註冊瀏覽器右鍵選單，但選單列表將會在 ScriptBox 擴充功能彈窗中顯示。  
+
+!/imgs/menus.jpg  
+
+``` javascript
+declare function registerMenuCommand(caption: string, commandFunc: () => void): string
+
+const id = registerMenuCommand('menu1',()=>{
+    console.log('menu1')
+})
+```
+
+### unregisterMenuCommand  
+取消註冊選單  
+``` javascript
+Dog.unregisterMenuCommand(id);
+```
+
+### setClipboard  
+設定文字到剪貼簿  
+``` javascript
+Dog.setClipboard('text');
+```
+
+### xmlhttpRequest  
+跨 CSP 網路請求，支援 Promise  
+``` javascript
+// 使用回呼函式
+Dog.xmlhttpRequest({
+    method:'POST',
+    data:{}, // 資料參數: FormData、JSON、鍵值對物件
+    headers:{},// 鍵值對物件
+    responseType, // 回傳類型 (string|arraybuff|blob)
+    url:'https://xx.com/api/xx',
+    onerror:(err)=>{
+        console.log(err)
+    },
+    onload:(response)=>{
+        /*
+        response 包含以下欄位
+        {
+            readyState: 4,
+            responseText: '',
+            status: 200,
+            response: any,
+            statusText: 'error'
+        }
+        */
+        console.log(res)
+    }
+});
+// Promise
+Dog.xmlhttpRequest({
+    url:'https://xx.com/api/xx',
+    method:'GET',
+}).then(res=>{
+    console.log(res)
+})
+```
+
+### addStyle  
+新增 CSS 樣式  
+``` javascript
+Dog.addStyle('body{color:red;}');
+```
+
+### addElement  
+新增元素，包含腳本  
+``` javascript
+Dog.addElement(tag: string, attributes: any):Element;
+
+const script = Dog.addElement('script',{src:'https://xx.com/a.js'})
+```
+
+### download  
+下載檔案  
+``` javascript
+Dog.download({url:'https://xx.com/a.png',filename:'a.png'});
+
+Dog.download('https://xx.com/a.png','a.png')
+```
+
+### openFile  
+開啟檔案選擇器，回傳檔案物件或字串，**此 API 為 ScriptBox 專屬***  
+``` javascript
+Dog.openFile(text=false);
+```
+
+### readFile  
+讀取檔案，回傳 arraybuffer|text|base64，**此 API 為 ScriptBox 專屬**  
+``` javascript
+Dog.readFile(file: File, type?: string);
+```
+
+### loadImage  
+載入圖片，回傳 HTMLImageElement，**此 API 為 ScriptBox 專屬**  
+``` javascript
+declare function loadImage(url: string): Promise<HTMLImageElement>
+
+const img = await Dog.loadImage('xx.jpg');
+
+Dog.loadImage('xx.jpg').then(img=>{
+    console.log(img)
+})
+```
+
+### registerTemplateFunction  
+為視覺化模板註冊回應事件，**此 API 為 ScriptBox 專屬**  
+``` javascript
+declare function registerTemplateFunction(funcName: string, func: any);
+
+Dog.registerTemplateFunction('onbtnclick',()=>{
+    console.log(123)
+})
+```
+
+### getTemplate  
+取得指定的視覺化模板，並附加模板參數，**此 API 為 ScriptBox 專屬**  
+``` javascript
+declare function getTemplate(name: string, data: any = {}) 
+
+const html = Dog.getTemplate('myTpl',{data:'123'});
+
+const div = document.querySelector('#my-div');
+div.innerHTML = html;
+```

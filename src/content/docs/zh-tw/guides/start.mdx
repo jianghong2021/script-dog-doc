@@ -6,6 +6,7 @@ description: 快速體驗腳本盒子
 
 import { Aside } from '@astrojs/starlight/components';
 import { Steps } from '@astrojs/starlight/components';
+import { Badge } from '@astrojs/starlight/components';
 
 試著快速體驗腳本盒子，從創建一個新的項目(或導入已有的)開始，完成編程後運行起來。
 <Aside type='caution' title='使用前提'>
@@ -38,6 +39,16 @@ import { Steps } from '@astrojs/starlight/components';
             - 文檔開始 - 網頁自身所有腳本之前運行，此時可能還不能操作元素。
             - 文檔結束 - 網頁準備就緒後，此時網頁自身一些資源(圖片，視頻等)尚未加載完成。
             - 文檔空閒 - 網頁一切準備就緒，並閒暇之餘。此時所有操作均已可行。
+    - **依賴的庫**  
+        - **場景** - 當你需要使用第三方庫的時候，請在此填寫，多個庫以換行分割。  
+        - **編程需求** - 文本與視覺化皆可以。  
+        - **示例** - ``` https://cdn.xx.com/v102/xx.js``` 填寫後，如何使用請查看 *編程* 部分。  
+
+    - **資源引用**  
+        - **場景** - 當你需要使用一些額外的資源（圖片，CSS樣式等）的時候，請在此填寫，多個庫以換行分割。  
+        - **編程需求** - 文本與視覺化皆可以。  
+        - **示例** - ```xx_image https://cdn.xx.com/static/xx.png``` <Badge text='注意' variant='caution'/>: **需要在每條連結前面加引用名稱，然後空格隔開，後續才能在項目中引用**，填寫後，如何使用請查看 *編程* 部分。  
+
 3. #### 編輯項目
     - 刪除 - 從本地刪除，不影響雲上的。
     - 編輯 - 修改項目信息

@@ -1,0 +1,178 @@
+---
+title: Dog模块API
+description: 适用于有JavaScript基础的开发者，兼容大部分篡改候GM API，命名空间包含GM.*，GM_*,API通用。
+---
+
+适用于有JavaScript基础的开发者，命名空间包含Dog.xx，GM.xx，GM_xx,API通用。
+
+### getValue
+获取缓存，此缓存全局的，所有网站共用。
+``` javascript
+const val1 = Dog.getValue('key');
+const val2 = Dog.getValue('key','defaultValue');
+```
+
+### setValue
+设置缓存，此缓存全局的，所有网站共用。
+``` javascript
+Dog.setValue('key','myVal');
+```
+### deleteValue
+删除缓存
+``` javascript
+Dog.deleteValue('key');
+```
+### listValues
+列出缓存，以k,v对象返回
+``` javascript
+const obj = Dog.listValues();
+```
+### getResourceUrl
+获取项目引用资源的链接，引用资源请参考项目编辑。
+``` javascript
+const url = Dog.getResourceUrl();
+```
+### getResourceText
+获取项目引用资源的文本内容，引用资源请参考项目编辑。
+``` javascript
+const text = Dog.getResourceText();
+```
+### openInTab
+打开新标签
+``` javascript
+Dog.openInTab('https://baidu.com');
+```
+### notification
+创建系统通知
+``` javascript
+Dog.notification(text: string, title?: string, image?: string);
+```
+
+### registerMenuCommand
+注册菜单，与GM有所区别，并不会真正注册浏览器右键菜单，但菜单列表将在脚本盒子扩展弹窗显示。
+
+![menus](/imgs/menus.jpg)
+
+``` javascript
+declare function registerMenuCommand(caption: string, commandFunc: () => void): string
+
+const id = registerMenuCommand('menu1',()=>{
+    console.log('menu1')
+})
+```
+
+### unregisterMenuCommand
+注册菜单
+``` javascript
+Dog.unregisterMenuCommand(id);
+```
+
+### setClipboard
+设置文本到剪切板
+``` javascript
+Dog.setClipboard('text');
+```
+
+### xmlhttpRequest
+跨CSP网络请求，支持Promise
+``` javascript
+// 使用回调
+Dog.xmlhttpRequest({
+    method:'POST',
+    data:{}, //数据参数:FormData,json,kv对象
+    headers:{},// kv对象
+    responseType, //返回类型 (string|arraybuff|blob)
+    url:'https://xx.com/api/xx',
+    onerror:(err)=>{
+        console.log(err)
+    },
+    onload:(response)=>{
+        /*
+        response 包含一下字段
+        {
+            readyState: 4,
+            responseText: '',
+            status: 200,
+            response: any,
+            statusText: 'error'
+        }
+        */
+        console.log(res)
+    }
+});
+// Promise
+Dog.xmlhttpRequest({
+    url:'https://xx.com/api/xx',
+    method:'GET',
+
+}).then(res=>{
+    console.log(res)
+})
+```
+
+### addStyle
+添加css样式
+``` javascript
+Dog.addStyle('body{color:red;}');
+```
+
+### addElement
+添加元素，包含脚本
+``` javascript
+Dog.addElement(tag: string, attributes: any):Element;
+
+const script = Dog.addElement('script',{src:'https://xx.com/a.js'})
+```
+
+### download
+下载文件
+``` javascript
+Dog.download({url:'https://xx.com/a.png',filename:'a.png'});
+
+Dog.download('https://xx.com/a.png','a.png')
+```
+
+### openFile
+打开文件选择器，返回文件对象或字符，**此API脚本盒子独有***
+``` javascript
+Dog.openFile(text=false);
+```
+
+### readFile
+读取文件，返回arraybuffer|text|base64，**此API脚本盒子独有**
+``` javascript
+Dog.readFile(file: File, type?: string);
+```
+
+### loadImage
+加载图片，返回HTMLImageElement，**此API脚本盒子独有**
+``` javascript
+declare function loadImage(url: string): Promise<HTMLImageElement>
+
+const img = await Dog.loadImage('xx.jpg');
+
+Dog.loadImage('xx.jpg').then(img=>{
+    console.log(img)
+})
+```
+
+### registerTemplateFunction
+为可视化模板注册响应事件，**此API脚本盒子独有**
+``` javascript
+declare function registerTemplateFunction(funcName: string, func: any);
+
+Dog.registerTemplateFunction('onbtnclick',()=>{
+    console.log(123)
+})
+```
+
+### getTemplate
+获取指定的可视化模板，并附加模板参数，**此API脚本盒子独有**
+``` javascript
+declare function getTemplate(name: string, data: any = {}) 
+
+const html = Dog.getTemplate('myTpl',{data:'123'});
+
+const div = document.querySelector('#my-div');
+div.innerHTML = html;
+```

@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	base: '/script-dog-doc/',
+	// base: '/',
 	integrations: [
 		starlight({
 			title: {
@@ -44,7 +44,7 @@ export default defineConfig({
 						{
 							label: 'Examples',
 							slug: 'guides/example',
-							translations:{
+							translations: {
 								'zh-CN': '示例',
 								'en': 'Examples',
 								'zh-TW': '示例',
@@ -53,7 +53,7 @@ export default defineConfig({
 						{
 							label: '快速开始',
 							slug: 'guides/start',
-							translations:{
+							translations: {
 								'zh-CN': '快速开始',
 								'en': 'Quick Start',
 								'zh-TW': '快速開始',
@@ -68,11 +68,11 @@ export default defineConfig({
 						'en': 'Reference',
 						'zh-TW': '參考',
 					},
-					items:[
+					items: [
 						{
 							label: 'Selector',
 							slug: 'reference/selector',
-							translations:{
+							translations: {
 								'zh-CN': 'CSS选择器',
 								'en': 'CSS Selector',
 								'zh-TW': 'CSS選擇器',
@@ -81,7 +81,7 @@ export default defineConfig({
 						{
 							label: 'Template',
 							slug: 'reference/template',
-							translations:{
+							translations: {
 								'zh-CN': '模板',
 								'en': 'Template',
 								'zh-TW': '模板',
@@ -89,12 +89,51 @@ export default defineConfig({
 						},
 						{
 							label: 'Code',
-							slug: 'reference/code',
-							translations:{
+							translations: {
 								'zh-CN': '编程',
 								'en': 'Code',
 								'zh-TW': '程式',
 							},
+							items: [
+								{
+									label: 'blockly',
+									translations: {
+										'zh-CN': '可视化脚本',
+										'en': 'Visual Script',
+										'zh-TW': '視覺化腳本',
+									},
+									items: [
+										{
+											label: 'blockly',
+											slug: 'reference/code',
+											translations: {
+												'zh-CN': '快速入门',
+												'en': 'Quick Start',
+												'zh-TW': '快速入門',
+											},
+										}
+									]
+								},
+								{
+									label: 'text',
+									translations: {
+										'zh-CN': '文本编程',
+										'en': 'Text Programming',
+										'zh-TW': '文字程式',
+									},
+									items: [
+										{
+											label: 'javascript',
+											slug: 'reference/dog',
+											translations: {
+												'zh-CN': 'Dog API',
+												'en': 'Dog API',
+												'zh-TW': 'Dog API',
+											},
+										}
+									]
+								}
+							]
 						},
 					]
 				},

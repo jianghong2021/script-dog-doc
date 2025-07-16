@@ -6,6 +6,7 @@ description: Quickly experience ScriptDog
 
 import { Aside } from '@astrojs/starlight/components';
 import { Steps } from '@astrojs/starlight/components';
+import { Badge } from '@astrojs/starlight/components';
 
 Try to quickly experience ScriptDog by starting a new project (or importing an existing one), and run it after completing the programming.
 <Aside type='caution' title='Prerequisites'>
@@ -38,6 +39,16 @@ The toggle for `Developer Mode` is located in the top-right corner in Chrome and
             - Document Start - Runs before all scripts of the webpage itself, at this time it may not be able to operate elements.
             - Document End - Runs after the webpage is ready, at this time some resources of the webpage itself (images, videos, etc.) have not been loaded.
             - Document Idle - Runs when the webpage is fully ready and idle. At this time, all operations are feasible.
+    - **Dependencies**  
+        - **Scenario** - When you need to use third-party libraries, fill in here. Multiple libraries should be separated by line breaks.  
+        - **Programming Requirement** - Applicable to both text and visual programming.  
+        - **Example** - ``` https://cdn.xx.com/v102/xx.js``` After filling in, refer to the *Programming* section for usage instructions.  
+
+    - **Resource References**  
+        - **Scenario** - When you need to use additional resources (images, CSS styles, etc.), fill in here. Multiple resources should be separated by line breaks.  
+        - **Programming Requirement** - Applicable to both text and visual programming.  
+        - **Example** - ```xx_image https://cdn.xx.com/static/xx.png``` <Badge text='Note' variant='caution'/>: **You must add a reference name before each link, followed by a space, to enable referencing in the project later**. After filling in, refer to the *Programming* section for usage instructions.  
+
 3. #### Edit Project
     - Delete - Delete locally, does not affect the cloud.
     - Edit - Modify project information

@@ -1,0 +1,178 @@
+---
+title: Dog Module API  
+description: Designed for developers with JavaScript basics, compatible with most Tampermonkey GM APIs. The namespace includes GM.*, GM_*, and common APIs.  
+
+---
+
+For developers with JavaScript basics. The namespace includes Dog.xx, GM.xx, GM_xx, and common APIs.  
+
+### getValue  
+Get cached data. This cache is global and shared across all websites.  
+``` javascript
+const val1 = Dog.getValue('key');
+const val2 = Dog.getValue('key','defaultValue');
+```
+
+### setValue  
+Set cached data. This cache is global and shared across all websites.  
+``` javascript
+Dog.setValue('key','myVal');
+```
+### deleteValue  
+Delete cached data  
+``` javascript
+Dog.deleteValue('key');
+```
+### listValues  
+List cached data, returned as key-value objects  
+``` javascript
+const obj = Dog.listValues();
+```
+### getResourceUrl  
+Get the URL of project-referenced resources. For referenced resources, refer to project editing.  
+``` javascript
+const url = Dog.getResourceUrl();
+```
+### getResourceText  
+Get the text content of project-referenced resources. For referenced resources, refer to project editing.  
+``` javascript
+const text = Dog.getResourceText();
+```
+### openInTab  
+Open a new tab  
+``` javascript
+Dog.openInTab('https://baidu.com');
+```
+### notification  
+Create a system notification  
+``` javascript
+Dog.notification(text: string, title?: string, image?: string);
+```
+
+### registerMenuCommand  
+Register a menu. Differs from GM in that it doesn't actually register the browser's right-click menu, but the menu list will be displayed in the ScriptBox extension popup.  
+
+!/imgs/menus.jpg  
+
+``` javascript
+declare function registerMenuCommand(caption: string, commandFunc: () => void): string
+
+const id = registerMenuCommand('menu1',()=>{
+    console.log('menu1')
+})
+```
+
+### unregisterMenuCommand  
+Unregister a menu  
+``` javascript
+Dog.unregisterMenuCommand(id);
+```
+
+### setClipboard  
+Set text to clipboard  
+``` javascript
+Dog.setClipboard('text');
+```
+
+### xmlhttpRequest  
+Cross-CSP network request with Promise support  
+``` javascript
+// Using callback
+Dog.xmlhttpRequest({
+    method:'POST',
+    data:{}, // Data parameters: FormData, JSON, or key-value object
+    headers:{},// Key-value object
+    responseType, // Return type (string|arraybuff|blob)
+    url:'https://xx.com/api/xx',
+    onerror:(err)=>{
+        console.log(err)
+    },
+    onload:(response)=>{
+        /*
+        response contains the following fields
+        {
+            readyState: 4,
+            responseText: '',
+            status: 200,
+            response: any,
+            statusText: 'error'
+        }
+        */
+        console.log(res)
+    }
+});
+// Promise
+Dog.xmlhttpRequest({
+    url:'https://xx.com/api/xx',
+    method:'GET',
+}).then(res=>{
+    console.log(res)
+})
+```
+
+### addStyle  
+Add CSS styles  
+``` javascript
+Dog.addStyle('body{color:red;}');
+```
+
+### addElement  
+Add an element, including scripts  
+``` javascript
+Dog.addElement(tag: string, attributes: any):Element;
+
+const script = Dog.addElement('script',{src:'https://xx.com/a.js'})
+```
+
+### download  
+Download a file  
+``` javascript
+Dog.download({url:'https://xx.com/a.png',filename:'a.png'});
+
+Dog.download('https://xx.com/a.png','a.png')
+```
+
+### openFile  
+Open a file selector, returns a file object or string. **This API is exclusive to ScriptBox**  
+``` javascript
+Dog.openFile(text=false);
+```
+
+### readFile  
+Read a file, returns arraybuffer|text|base64. **This API is exclusive to ScriptBox**  
+``` javascript
+Dog.readFile(file: File, type?: string);
+```
+
+### loadImage  
+Load an image, returns HTMLImageElement. **This API is exclusive to ScriptBox**  
+``` javascript
+declare function loadImage(url: string): Promise<HTMLImageElement>
+
+const img = await Dog.loadImage('xx.jpg');
+
+Dog.loadImage('xx.jpg').then(img=>{
+    console.log(img)
+})
+```
+
+### registerTemplateFunction  
+Register a response event for visual templates. **This API is exclusive to ScriptBox**  
+``` javascript
+declare function registerTemplateFunction(funcName: string, func: any);
+
+Dog.registerTemplateFunction('onbtnclick',()=>{
+    console.log(123)
+})
+```
+
+### getTemplate  
+Get a specified visual template and attach template parameters. **This API is exclusive to ScriptBox**  
+``` javascript
+declare function getTemplate(name: string, data: any = {}) 
+
+const html = Dog.getTemplate('myTpl',{data:'123'});
+
+const div = document.querySelector('#my-div');
+div.innerHTML = html;
+```
