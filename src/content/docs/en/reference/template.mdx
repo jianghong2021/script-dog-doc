@@ -54,3 +54,15 @@ Delete from local, any references in the code will fail thereafter.
                 - click - Displayed when clicked
                 - even/odd - Displayed only for odd/even numbers in the same selector name list
             </Steps>
+
+
+### Using templates in code
+#### Visual Script
+![template](/imgs/code-tpl.jpg)
+
+#### Text Script(javascript)
+```javascript
+const htmlStr = Dog.getTemplate('myTpl',{data:'123'});
+const div = document.querySelector('#my-div');
+div.innerHTML = htmlStr;
+```

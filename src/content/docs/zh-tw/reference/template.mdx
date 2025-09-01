@@ -54,3 +54,14 @@ import { Steps } from '@astrojs/starlight/components';
                 - click - 被點擊時顯示
                 - even/odd - 同一個選擇器名稱列表下，單數或雙數才會顯示
             </Steps>
+
+### 程式碼中使用範本
+#### 視覺化腳本
+![template](/imgs/code-tpl.jpg)
+
+#### 文字腳本(javascript)
+```javascript
+const htmlStr = Dog.getTemplate('myTpl',{data:'123'});
+const div = document.querySelector('#my-div');
+div.innerHTML = htmlStr;
+```

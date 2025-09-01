@@ -19,24 +19,17 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ### App Store
 
-<a target="_blank" href="https://chromewebstore.google.com/detail/peoieokehoempafaofbiahjgeecfmmlb?utm_source=item-share-cb">
-	<img width="40" style="display:inline;" src="/imgs/chrome.svg"/>
-</a>
-<a target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/%E8%84%9A%E6%9C%AC%E7%9B%92%E5%AD%90%E8%84%9A%E6%9C%AC%E7%8B%97/phpfefdnepkjdihobpdegfpnghnkcdka">
-	<img width="40" style="display:inline;" src="/imgs/edge.svg"/>
-</a>
-<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd">
-	<img width="40" style="display:inline;" src="/imgs/360-web.svg"/>
-</a>
-<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd">
-	<img width="40" style="display:inline;" src="/imgs/360-chrome.svg"/>
-</a>
+|Chrome | Edge|360 Browser
+|---|---|---|
+|<a target="_blank" href="https://chromewebstore.google.com/detail/peoieokehoempafaofbiahjgeecfmmlb?utm_source=item-share-cb"><img width="40" style="display:inline;" src="/imgs/chrome.svg"/></a>|<a target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/%E8%84%9A%E6%9C%AC%E7%9B%92%E5%AD%90%E8%84%9A%E6%9C%AC%E7%8B%97/phpfefdnepkjdihobpdegfpnghnkcdka"><img width="40" style="display:inline;" src="/imgs/edge.svg"/></a>|<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd"><img width="40" style="display:inline;" src="/imgs/360-web.svg"/></a>|
+
 
 ### Latest News
 <a target="_blank" href="https://gitee.com/jhpw/script-dog/releases">Latest installation package</a>
 <a target="_blank" href="https://gitee.com/jhpw/script-dog/releases">Update Log</a>
+<a target="_blank" href="https://space.bilibili.com/3546893210618164">Bilibili</a>
 
-### Community communication
+### Community Communication
 <a target="_blank" href="https://t.me/jbg_dev">Telegram</a>
 <a target="_blank" href="https://x.com/gzhlm2025">X</a>
 
@@ -56,3 +49,22 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
         Tampermonkey, ScriptCat, etc.
     </Card>
 </CardGrid>
+
+
+### Differences from Other Script Managers
+
+|Feature/Manager|ScriptBox|Tampermonkey|ScriptCat|
+|--- |---|---|---|
+|Content Scripts (extensions, enhance web pages)|✓|✓|✓|
+|Sidebar Scripts (scripts run in independent windows, can be used for tools, games, long-term tasks)|✓|❌|❌|
+|Independent Windows (similar to sidebar)|✓|❌|❌|
+|Scheduled Scripts (scheduled long-term tasks, independent windows can replace)|❌|❌|✓|
+|Visual Scripts (drag and drop to generate scripts)|✓|❌|❌|
+|Visual Templates (visual and text scripts are universal)|✓|❌|❌|
+|Popup Quick Launch (icon popup lists available scripts for quick launch)|✓|❌|❌|
+|Third-Party Libraries (import third-party libraries for rapid script development)|✓|✓|✓|
+|Resource Reference (images, styles, etc.)|✓|✓|✓|
+|Tampermonkey API(Interacting with browser)|✓|✓|✓|
+|Editor Extensions (rich editor and custom visual modules)|✓|❌|❌|
+|Quick Start|✓|❌|❌|
+|Script Backup|✓|✓|✓|

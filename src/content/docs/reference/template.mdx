@@ -55,4 +55,14 @@ import { Steps } from '@astrojs/starlight/components';
                 - even/odd - 同一个选择器名称列表下，单数或双数才会显示
             </Steps>
 
-            -
+
+### 代码中使用模板
+#### 可视化脚本
+![template](/imgs/code-tpl.jpg)
+
+#### 文本脚本(javascript)
+```javascript
+const htmlStr = Dog.getTemplate('myTpl',{data:'123'});
+const div = document.querySelector('#my-div');
+div.innerHTML = htmlStr;
+```

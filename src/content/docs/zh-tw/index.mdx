@@ -19,24 +19,16 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 ### 應用商店
 
-<a target="_blank" href="https://chromewebstore.google.com/detail/peoieokehoempafaofbiahjgeecfmmlb?utm_source=item-share-cb">
-	<img width="40" style="display:inline;" src="/imgs/chrome.svg"/>
-</a>
-<a target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/%E8%84%9A%E6%9C%AC%E7%9B%92%E5%AD%90%E8%84%9A%E6%9C%AC%E7%8B%97/phpfefdnepkjdihobpdegfpnghnkcdka">
-	<img width="40" style="display:inline;" src="/imgs/edge.svg"/>
-</a>
-<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd">
-	<img width="40" style="display:inline;" src="/imgs/360-web.svg"/>
-</a>
-<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd">
-	<img width="40" style="display:inline;" src="/imgs/360-chrome.svg"/>
-</a>
+|Chrome | Edge|360瀏覽器
+|---|---|---|
+|<a target="_blank" href="https://chromewebstore.google.com/detail/peoieokehoempafaofbiahjgeecfmmlb?utm_source=item-share-cb"><img width="40" style="display:inline;" src="/imgs/chrome.svg"/></a>|<a target="_blank" href="https://microsoftedge.microsoft.com/addons/detail/%E8%84%9A%E6%9C%AC%E7%9B%92%E5%AD%90%E8%84%9A%E6%9C%AC%E7%8B%97/phpfefdnepkjdihobpdegfpnghnkcdka"><img width="40" style="display:inline;" src="/imgs/edge.svg"/></a>|<a target="_blank" href="https://ext.se.360.cn/#/extension-detail?id=lppjaenmfbolddjcenabjiljcpefgcfd"><img width="40" style="display:inline;" src="/imgs/360-web.svg"/></a>|
 
 ### 最新動態
 <a target="_blank" href="https://gitee.com/jhpw/script-dog/releases">最新安裝包</a>
 <a target="_blank" href="https://gitee.com/jhpw/script-dog/releases">更新日誌</a>
+<a target="_blank" href="https://space.bilibili.com/3546893210618164">Bilibili</a>
 
-### 社區交流
+### 社群交流
 <a target="_blank" href="https://t.me/jbg_dev">Telegram</a>
 <a target="_blank" href="https://x.com/gzhlm2025">X</a>
 
@@ -44,15 +36,33 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 <CardGrid >
     <Card title="入門簡單" icon="open-book">
-        幾乎不需要編程基礎
+        幾乎不需要程式基礎
     </Card>
     <Card title="可視化腳本" icon="pencil">
-        基於 `blockly` 的塊腳本編程
+        基於 `blockly` 的積木腳本編程
     </Card>
     <Card title="多種運行方式" icon="seti:happenings">
-        支持內容腳本，側邊欄開發，獨立窗口等
+        支援內容腳本、側邊欄開發、獨立視窗等
     </Card>
     <Card title="兼容第三方用戶腳本" icon="external">
-        篡改猴,腳本貓等
+        篡改猴、腳本貓等
     </Card>
 </CardGrid>
+
+### 與其他腳本管理器的差異
+
+|功能/管理器|腳本盒子|篡改猴|腳本貓|
+|--- |---|---|---|
+|內容腳本（擴充、增強網頁）|✓|✓|✓|
+|側邊欄腳本（腳本運行獨立視窗，可用於工具、遊戲，可作長期任務）|✓|❌|❌|
+|獨立視窗（與側邊欄類似）|✓|❌|❌|
+|定時腳本（定時長期任務，獨立視窗可替代）|❌|❌|✓|
+|可視化腳本（滑鼠拖曳生成腳本）|✓|❌|❌|
+|可視化模板（可視化與文字腳本通用）|✓|❌|❌|
+|彈窗快速啟動（圖示彈窗列出可用腳本，可快速啟動）|✓|❌|❌|
+|第三方庫（導入第三方庫，快速開發腳本）|✓|✓|✓|
+|資源引用（圖片、樣式等）|✓|✓|✓|
+|油猴 API (與瀏覽器互動) |✓|✓|✓|
+|編輯器擴充（豐富編輯器，以及擴充自訂可視化模組）|✓|❌|❌|
+|快速上手|✓|❌|❌|
+|腳本備份|✓|✓|✓|
