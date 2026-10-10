@@ -1,0 +1,43 @@
+{
+	// 部署名称，可自行修改
+	"name": "script-dog-doc",
+	// Astro Cloudflare 适配器构建产物入口
+	"main": "./dist/_worker.js/index.js",
+	"compatibility_date": "2025-09-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	// 静态资源绑定（文档站与前端页面）
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	"vars": {
+		// 使用该邮箱注册的账号将自动成为管理员
+		"ADMIN_EMAIL": "jianghong2020@qq.com"
+	},
+	// 执行 `npx wrangler d1 create script-dog-doc` 后，把返回的 database_id 填入下方
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "script-dog-doc",
+			"database_id": "a3b592cb-660f-4094-ad2b-cc70f86e081c",
+			"remote": false
+		}
+	],
+	// R2 桶：执行 `npx wrangler r2 bucket create <名称>` 创建
+	"r2_buckets": [
+		{
+			"binding": "IMAGES",
+			"bucket_name": "script-dog-files",
+			"remote": false
+		}
+	],
+	// Astro Cloudflare 适配器会自动启用 sessions，需要 SESSION KV 绑定
+	// 首次 `wrangler deploy` 时 Wrangler 会自动创建（自动预置）
+	"kv_namespaces": [
+		{
+			"binding": "SESSION"
+		}
+	]
+}

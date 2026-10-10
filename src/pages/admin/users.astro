@@ -1,0 +1,166 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { listUsers } from '../../lib/db';
+import { getEnv } from '../../lib/utils';
+
+const env = getEnv(Astro.locals);
+const me = Astro.locals.user;
+const url = Astro.url;
+const q = url.searchParams.get('q') ?? '';
+const page = Math.max(1, Number(url.searchParams.get('page') ?? '1') || 1);
+const pageSize = 20;
+const { items, total } = await listUsers(env, { q, page, pageSize });
+const totalPages = Math.max(1, Math.ceil(total / pageSize));
+const formatDate = (ts: number) => new Date(ts).toLocaleString('zh-CN', { hour12: false });
+---
+
+<AdminLayout title="用户管理">
+	<div class="head">
+		<h1>用户管理</h1>
+		<form method="get" action="/admin/users">
+			<input class="sd-input" type="search" name="q" placeholder="按邮箱搜索" value={q} />
+			<button class="sd-btn" type="submit">搜索</button>
+		</form>
+	</div>
+
+	<p class="sd-muted">共 {total} 个用户</p>
+
+	<div class="table-wrap sd-card">
+		<table>
+			<thead>
+				<tr>
+					<th>邮箱</th>
+					<th>昵称</th>
+					<th>角色</th>
+					<th>状态</th>
+					<th>注册时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{items.map((user) => (
+					<tr>
+						<td>{user.email}</td>
+						<td>{user.nickname || '-'}</td>
+						<td>{user.role === 'admin' ? '管理员' : '普通用户'}</td>
+						<td>
+							<span class:list={['sd-tag', user.status === 'disabled' ? 'off' : 'on']}>
+								{user.status === 'disabled' ? '已禁用' : '正常'}
+							</span>
+						</td>
+						<td>{formatDate(user.created_at)}</td>
+						<td class="ops">
+							<button
+								class="sd-btn sd-btn-sm sd-btn-ghost"
+								data-action="status"
+								data-id={user.id}
+								data-value={user.status === 'active' ? 'disabled' : 'active'}
+								disabled={user.role === 'admin' || user.id === me?.id}
+							>
+								{user.status === 'active' ? '禁用' : '启用'}
+							</button>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	</div>
+
+	{
+		totalPages > 1 && (
+			<nav class="pager">
+				<span class="sd-muted">第 {page} / {totalPages} 页</span>
+			</nav>
+		)
+	}
+</AdminLayout>
+
+<script>
+	document.addEventListener('click', async (event) => {
+		const target = event.target as HTMLElement;
+		const btn = target.closest('button[data-action="status"]') as HTMLButtonElement | null;
+		if (!btn) return;
+		const id = btn.dataset.id!;
+		const value = btn.dataset.value!;
+		if (value === 'disabled' && !confirm('确认禁用该用户？其登录状态将立即失效。')) return;
+		btn.disabled = true;
+		try {
+			const res = await fetch(`/api/admin/users/${id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: value }),
+			});
+			const result = await res.json();
+			if (res.ok && result.ok) {
+				location.reload();
+				return;
+			}
+			alert(result.message || '操作失败');
+		} catch {
+			alert('网络错误，请稍后重试');
+		}
+		btn.disabled = false;
+	});
+</script>
+
+<style>
+	.head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+	.head h1 {
+		margin: 0;
+		font-size: 22px;
+	}
+	.head form {
+		display: flex;
+		gap: 8px;
+	}
+	.head .sd-input {
+		width: 220px;
+	}
+	.table-wrap {
+		overflow-x: auto;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 14px;
+	}
+	th,
+	td {
+		text-align: left;
+		padding: 10px 14px;
+		border-bottom: 1px solid var(--sd-border);
+		white-space: nowrap;
+	}
+	th {
+		color: var(--sd-muted);
+		font-weight: 500;
+		font-size: 13px;
+	}
+	tbody tr:last-child td {
+		border-bottom: none;
+	}
+	.ops {
+		display: flex;
+		gap: 8px;
+	}
+	.sd-tag.on {
+		color: #1a7f37;
+		border-color: #1a7f37;
+	}
+	.sd-tag.off {
+		color: var(--sd-danger);
+		border-color: var(--sd-danger);
+	}
+	.pager {
+		margin-top: 16px;
+		text-align: center;
+	}
+</style>

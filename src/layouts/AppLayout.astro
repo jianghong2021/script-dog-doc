@@ -1,0 +1,287 @@
+---
+import type { SessionUser } from '../lib/types';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { title = '脚本市场', description = '脚本盒子脚本分享与下载' } = Astro.props;
+const user = Astro.locals.user as SessionUser | null;
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title} - 脚本盒子</title>
+	</head>
+	<body>
+		<header class="sd-header">
+			<div class="sd-container sd-nav">
+				<a class="sd-brand" href="/">
+					<img src="/logo.png" alt="脚本盒子" width="28" height="28" />
+					<span>脚本盒子</span>
+				</a>
+				<nav class="sd-links">
+					<a href="/" class:list={[{ active: isActive('/') }]}>文档</a>
+					<a href="/scripts" class:list={[{ active: isActive('/scripts') }]}>脚本市场</a>
+					{user && <a href="/my-scripts" class:list={[{ active: isActive('/my-scripts') }]}>我的脚本</a>}
+					<a href="/upload" class:list={[{ active: isActive('/upload') }]}>上传脚本</a>
+					{user?.role === 'admin' && <a href="/admin" class:list={[{ active: isActive('/admin') }]}>管理后台</a>}
+				</nav>
+				<div class="sd-auth">
+					{
+						user ? (
+							<>
+								<span class="sd-user" title={user.email}>{user.nickname || user.email}</span>
+								<form method="post" action="/api/auth/logout">
+									<button type="submit" class="sd-btn sd-btn-ghost">退出</button>
+								</form>
+							</>
+						) : (
+							<>
+								<a class="sd-btn sd-btn-ghost" href="/login">登录</a>
+								<a class="sd-btn" href="/register">注册</a>
+							</>
+						)
+					}
+				</div>
+			</div>
+		</header>
+
+		<main class="sd-container sd-main">
+			<slot />
+		</main>
+
+		<footer class="sd-footer">
+			<div class="sd-container">
+				<span>脚本盒子 · 脚本分享</span>
+			</div>
+		</footer>
+
+		<script is:inline>
+			(function () {
+				var chromeUrl =
+					'https://chromewebstore.google.com/detail/peoieokehoempafaofbiahjgeecfmmlb?utm_source=item-share-cb';
+				var edgeUrl =
+					'https://microsoftedge.microsoft.com/addons/detail/phpfefdnepkjdihobpdegfpnghnkcdka';
+				function extensionUrl() {
+					return /edg/i.test(navigator.userAgent) ? edgeUrl : chromeUrl;
+				}
+				document.addEventListener('click', function (event) {
+					var target = event.target && event.target.closest ? event.target.closest('[data-install-url]') : null;
+					if (!target) return;
+					event.preventDefault();
+					var url = target.getAttribute('data-install-url');
+					if (window.dog && typeof window.dog.installScript === 'function') {
+						window.dog.installScript(url);
+					} else {
+						window.open(extensionUrl(), '_blank');
+					}
+				});
+			})();
+		</script>
+
+		<style is:global>
+			:root {
+				--sd-bg: #ffffff;
+				--sd-fg: #1f2328;
+				--sd-muted: #656d76;
+				--sd-border: #d8dee4;
+				--sd-card: #ffffff;
+				--sd-soft: #f6f8fa;
+				--sd-primary: #4f46e5;
+				--sd-primary-fg: #ffffff;
+				--sd-danger: #cf222e;
+				--sd-radius: 10px;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--sd-bg: #0d1117;
+					--sd-fg: #e6edf3;
+					--sd-muted: #9198a1;
+					--sd-border: #30363d;
+					--sd-card: #161b22;
+					--sd-soft: #161b22;
+					--sd-primary: #6366f1;
+				}
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background: var(--sd-bg);
+				color: var(--sd-fg);
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+					'Microsoft YaHei', sans-serif;
+				line-height: 1.6;
+			}
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+			.sd-container {
+				width: 100%;
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+			.sd-header {
+				position: sticky;
+				top: 0;
+				z-index: 10;
+				background: color-mix(in srgb, var(--sd-bg) 88%, transparent);
+				backdrop-filter: blur(8px);
+				border-bottom: 1px solid var(--sd-border);
+			}
+			.sd-nav {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				height: 58px;
+			}
+			.sd-brand {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				font-weight: 700;
+			}
+			.sd-brand img {
+				border-radius: 6px;
+			}
+			.sd-links {
+				display: flex;
+				gap: 4px;
+				margin-left: 12px;
+				flex: 1;
+			}
+			.sd-links a {
+				padding: 6px 12px;
+				border-radius: 8px;
+				color: var(--sd-muted);
+				font-size: 14px;
+			}
+			.sd-links a:hover {
+				color: var(--sd-fg);
+				background: var(--sd-soft);
+			}
+			.sd-links a.active {
+				color: var(--sd-fg);
+				background: var(--sd-soft);
+				font-weight: 600;
+			}
+			.sd-auth {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.sd-auth form {
+				margin: 0;
+			}
+			.sd-user {
+				max-width: 160px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				font-size: 14px;
+				color: var(--sd-muted);
+			}
+			.sd-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
+				padding: 7px 14px;
+				border: 1px solid var(--sd-primary);
+				background: var(--sd-primary);
+				color: var(--sd-primary-fg);
+				border-radius: 8px;
+				font-size: 14px;
+				cursor: pointer;
+				font-family: inherit;
+			}
+			.sd-btn:hover {
+				filter: brightness(1.08);
+			}
+			.sd-btn-ghost {
+				background: transparent;
+				color: var(--sd-fg);
+				border-color: var(--sd-border);
+			}
+			.sd-btn-ghost:hover {
+				background: var(--sd-soft);
+			}
+			.sd-btn-sm {
+				padding: 4px 10px;
+				font-size: 13px;
+			}
+			.sd-btn-danger {
+				border-color: var(--sd-danger);
+				background: var(--sd-danger);
+				color: #fff;
+			}
+			.sd-btn[disabled] {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+			.sd-main {
+				min-height: calc(100vh - 58px - 56px);
+				padding-top: 28px;
+				padding-bottom: 48px;
+			}
+			.sd-footer {
+				border-top: 1px solid var(--sd-border);
+				padding: 18px 0;
+				color: var(--sd-muted);
+				font-size: 13px;
+			}
+			.sd-card {
+				background: var(--sd-card);
+				border: 1px solid var(--sd-border);
+				border-radius: var(--sd-radius);
+			}
+			.sd-input,
+			.sd-textarea,
+			.sd-select {
+				width: 100%;
+				padding: 8px 12px;
+				border: 1px solid var(--sd-border);
+				border-radius: 8px;
+				background: var(--sd-bg);
+				color: var(--sd-fg);
+				font-size: 14px;
+				font-family: inherit;
+			}
+			.sd-label {
+				display: block;
+				font-size: 13px;
+				color: var(--sd-muted);
+				margin-bottom: 6px;
+			}
+			.sd-muted {
+				color: var(--sd-muted);
+			}
+			.sd-tag {
+				display: inline-block;
+				padding: 1px 8px;
+				border-radius: 999px;
+				background: var(--sd-soft);
+				border: 1px solid var(--sd-border);
+				font-size: 12px;
+				color: var(--sd-muted);
+			}
+			.sd-empty {
+				text-align: center;
+				color: var(--sd-muted);
+				padding: 60px 0;
+			}
+		</style>
+	</body>
+</html>

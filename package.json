@@ -7,13 +7,21 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:init": "wrangler d1 execute script-dog-doc --file=./schema.sql --remote",
+    "db:init:local": "wrangler d1 execute script-dog-doc --file=./schema.sql --local",
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
     "sharp": "^0.32.5"
   },
-  "devDependencies":{
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/starlight": "^0.31.0",
-    "astro": "^5.1.7"
+    "@cloudflare/workers-types": "^5.20261009.1",
+    "astro": "^5.1.7",
+    "typescript": "^5.7.2",
+    "wrangler": "^4.0.0"
   }
 }

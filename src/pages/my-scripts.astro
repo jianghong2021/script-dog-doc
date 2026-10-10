@@ -1,0 +1,196 @@
+---
+export const prerender = false;
+
+import AppLayout from '../layouts/AppLayout.astro';
+import Pagination from '../components/Pagination.astro';
+import { listScripts } from '../lib/db';
+import { getEnv } from '../lib/utils';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login?redirect=%2Fmy-scripts');
+
+const env = getEnv(Astro.locals);
+const page = Math.max(1, Number(Astro.url.searchParams.get('page') ?? '1') || 1);
+const pageSize = 20;
+const { items, total, page: currentPage } = await listScripts(env, {
+	userId: user.id,
+	status: 'all',
+	page,
+	pageSize,
+});
+const totalPages = Math.max(1, Math.ceil(total / pageSize));
+const formatDate = (ts: number) => new Date(ts).toLocaleString('zh-CN', { hour12: false });
+const typeLabels: Record<string, string> = {
+	content: '内容脚本',
+	window: '独立窗口',
+	sidePanel: '侧边栏',
+	editorPlugin: '编辑器扩展',
+};
+---
+
+<AppLayout title="我的脚本">
+	<div class="head">
+		<div>
+			<h1>我的脚本</h1>
+			<p class="sd-muted">管理你上传的脚本，可升级、下架或删除。</p>
+		</div>
+		<a class="sd-btn" href="/upload">上传脚本</a>
+	</div>
+
+	<div class="table-wrap sd-card">
+		<table>
+			<thead>
+				<tr>
+					<th>名称</th>
+					<th>类型</th>
+					<th>状态</th>
+					<th>下载</th>
+					<th>更新时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{items.map((script) => (
+					<tr>
+						<td><a href={`/scripts/${script.id}`}>{script.name}</a></td>
+						<td>{typeLabels[script.script_type ?? ''] ?? '-'}</td>
+						<td>
+							<span class:list={['sd-tag', script.status === 'offline' ? 'off' : 'on']}>
+								{script.status === 'offline' ? '已下架' : '已发布'}
+							</span>
+						</td>
+						<td>{script.downloads}</td>
+						<td>{formatDate(script.updated_at)}</td>
+						<td class="ops">
+							<a class="sd-btn sd-btn-sm sd-btn-ghost" href={`/upload?id=${script.id}`}>升级</a>
+							<button
+								class="sd-btn sd-btn-sm sd-btn-ghost"
+								data-action="toggle"
+								data-id={script.id}
+								data-value={script.status === 'published' ? 'offline' : 'published'}
+							>
+								{script.status === 'published' ? '下架' : '上架'}
+							</button>
+							<button class="sd-btn sd-btn-sm sd-btn-danger" data-action="delete" data-id={script.id}>
+								删除
+							</button>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+		{items.length === 0 && <div class="sd-empty">你还没有上传过脚本</div>}
+	</div>
+
+	<Pagination
+		basePath="/my-scripts"
+		page={currentPage}
+		totalPages={totalPages}
+		total={total}
+		pageSize={pageSize}
+	/>
+</AppLayout>
+
+<script>
+	document.addEventListener('click', async (event) => {
+		const target = event.target as HTMLElement;
+		const btn = target.closest('button[data-action]') as HTMLButtonElement | null;
+		if (!btn) return;
+		const id = btn.dataset.id!;
+		const action = btn.dataset.action!;
+
+		if (action === 'delete') {
+			if (!confirm('确认删除该脚本？关联的 JSON 与预览图片都会一并删除，且不可恢复。')) return;
+			btn.disabled = true;
+			try {
+				const res = await fetch(`/api/scripts/${id}`, { method: 'DELETE' });
+				const result = await res.json();
+				if (res.ok && result.ok) {
+					location.reload();
+					return;
+				}
+				alert(result.message || '删除失败');
+			} catch {
+				alert('网络错误，请稍后重试');
+			}
+			btn.disabled = false;
+			return;
+		}
+
+		if (action === 'toggle') {
+			const value = btn.dataset.value!;
+			if (value === 'offline' && !confirm('确认下架该脚本？下架后将不在脚本市场展示。')) return;
+			btn.disabled = true;
+			try {
+				const res = await fetch(`/api/scripts/${id}`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ status: value }),
+				});
+				const result = await res.json();
+				if (res.ok && result.ok) {
+					location.reload();
+					return;
+				}
+				alert(result.message || '操作失败');
+			} catch {
+				alert('网络错误，请稍后重试');
+			}
+			btn.disabled = false;
+		}
+	});
+</script>
+
+<style>
+	.head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin-bottom: 16px;
+	}
+	.head h1 {
+		margin: 0 0 4px;
+		font-size: 22px;
+	}
+	.head p {
+		margin: 0;
+		font-size: 13px;
+	}
+	.table-wrap {
+		overflow-x: auto;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 14px;
+	}
+	th,
+	td {
+		text-align: left;
+		padding: 10px 14px;
+		border-bottom: 1px solid var(--sd-border);
+		white-space: nowrap;
+	}
+	th {
+		color: var(--sd-muted);
+		font-weight: 500;
+		font-size: 13px;
+	}
+	tbody tr:last-child td {
+		border-bottom: none;
+	}
+	.ops {
+		display: flex;
+		gap: 8px;
+	}
+	.sd-tag.on {
+		color: #1a7f37;
+		border-color: #1a7f37;
+	}
+	.sd-tag.off {
+		color: var(--sd-danger);
+		border-color: var(--sd-danger);
+	}
+</style>

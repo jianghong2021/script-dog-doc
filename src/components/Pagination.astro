@@ -1,0 +1,126 @@
+---
+interface Props {
+	basePath: string;
+	page: number;
+	totalPages: number;
+	total: number;
+	pageSize: number;
+	query?: Record<string, string>;
+}
+
+const { basePath, page, totalPages, total, pageSize, query = {} } = Astro.props;
+
+const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
+const rangeEnd = Math.min(total, page * pageSize);
+
+const href = (p: number): string => {
+	const params = new URLSearchParams();
+	for (const [key, value] of Object.entries(query)) {
+		if (value !== '' && value != null) params.set(key, String(value));
+	}
+	if (p > 1) params.set('page', String(p));
+	const str = params.toString();
+	return str ? `${basePath}?${str}` : basePath;
+};
+
+const pages: (number | '…')[] = [];
+if (totalPages <= 7) {
+	for (let i = 1; i <= totalPages; i++) pages.push(i);
+} else {
+	pages.push(1);
+	const start = Math.max(2, page - 1);
+	const end = Math.min(totalPages - 1, page + 1);
+	if (start > 2) pages.push('…');
+	for (let i = start; i <= end; i++) pages.push(i);
+	if (end < totalPages - 1) pages.push('…');
+	pages.push(totalPages);
+}
+---
+
+{
+	total > 0 && (
+		<nav class="pager" aria-label="分页">
+			<span class="range sd-muted">
+				第 {rangeStart}–{rangeEnd} 条，共 {total} 条
+			</span>
+			{totalPages > 1 && (
+				<div class="pages">
+					{page > 1 ? <a class="pg" href={href(1)}>首页</a> : <span class="pg disabled">首页</span>}
+					{page > 1 ? (
+						<a class="pg" href={href(page - 1)}>上一页</a>
+					) : (
+						<span class="pg disabled">上一页</span>
+					)}
+					{pages.map((p) =>
+						p === '…' ? (
+							<span class="ellipsis">…</span>
+						) : p === page ? (
+							<span class="pg num active">{p}</span>
+						) : (
+							<a class="pg num" href={href(p)}>{p}</a>
+						)
+					)}
+					{page < totalPages ? (
+						<a class="pg" href={href(page + 1)}>下一页</a>
+					) : (
+						<span class="pg disabled">下一页</span>
+					)}
+					{page < totalPages ? <a class="pg" href={href(totalPages)}>末页</a> : <span class="pg disabled">末页</span>}
+				</div>
+			)}
+		</nav>
+	)
+}
+
+<style>
+	.pager {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		margin-top: 28px;
+	}
+	.range {
+		font-size: 13px;
+	}
+	.pages {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		flex-wrap: wrap;
+	}
+	.pg {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 34px;
+		height: 34px;
+		padding: 0 10px;
+		border: 1px solid var(--sd-border);
+		border-radius: 8px;
+		font-size: 13px;
+		color: var(--sd-fg);
+		background: var(--sd-card);
+	}
+	a.pg:hover {
+		border-color: var(--sd-primary);
+	}
+	.pg.num {
+		padding: 0 6px;
+	}
+	.pg.active {
+		background: var(--sd-primary);
+		border-color: var(--sd-primary);
+		color: var(--sd-primary-fg);
+		font-weight: 600;
+	}
+	.pg.disabled {
+		color: var(--sd-muted);
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.ellipsis {
+		padding: 0 4px;
+		color: var(--sd-muted);
+	}
+</style>

@@ -1,0 +1,66 @@
+---
+import AppLayout from './AppLayout.astro';
+
+interface Props {
+	title?: string;
+}
+const { title = '管理后台' } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<AppLayout title={title}>
+	<div class="admin">
+		<aside class="side">
+			<h2>管理后台</h2>
+			<nav>
+				<a href="/admin/users" class:list={[{ active: path.startsWith('/admin/users') }]}>用户管理</a>
+				<a href="/admin/scripts" class:list={[{ active: path.startsWith('/admin/scripts') }]}>脚本管理</a>
+			</nav>
+		</aside>
+		<section class="content">
+			<slot />
+		</section>
+	</div>
+</AppLayout>
+
+<style>
+	.admin {
+		display: grid;
+		grid-template-columns: 200px 1fr;
+		gap: 24px;
+		align-items: start;
+	}
+	.side {
+		position: sticky;
+		top: 78px;
+	}
+	.side h2 {
+		font-size: 15px;
+		margin: 0 0 12px;
+	}
+	.side nav {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.side a {
+		padding: 8px 12px;
+		border-radius: 8px;
+		color: var(--sd-muted);
+		font-size: 14px;
+	}
+	.side a:hover {
+		background: var(--sd-soft);
+		color: var(--sd-fg);
+	}
+	.side a.active {
+		background: var(--sd-soft);
+		color: var(--sd-fg);
+		font-weight: 600;
+	}
+	@media (max-width: 720px) {
+		.admin {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

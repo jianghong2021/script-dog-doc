@@ -1,10 +1,20 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
 	// base: '/',
+	adapter: cloudflare({
+		imageService: 'passthrough',
+		platformProxy: {
+			enabled: true,
+			configPath: './wrangler.jsonc',
+			// 本地开发强制使用本地模拟绑定，避免默认走远程绑定导致 D1 丢失
+			remoteBindings: false,
+		},
+	}),
 	integrations: [
 		starlight({
 			title: {
@@ -136,6 +146,15 @@ export default defineConfig({
 							]
 						},
 					]
+				},
+				{
+					label: '脚本市场',
+					link: '/scripts',
+					translations: {
+						'zh-CN': '脚本市场',
+						'en': 'Script Market',
+						'zh-TW': '腳本市場',
+					},
 				},
 			],
 		}),

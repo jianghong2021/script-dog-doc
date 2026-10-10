@@ -1,0 +1,272 @@
+---
+export const prerender = false;
+
+import AppLayout from '../layouts/AppLayout.astro';
+import { getScript } from '../lib/db';
+import { getEnv } from '../lib/utils';
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/login?redirect=%2Fupload');
+
+const editId = Astro.url.searchParams.get('id') ?? '';
+const editScript = editId ? await getScript(getEnv(Astro.locals), editId) : null;
+if (editId && (!editScript || (editScript.user_id !== user.id && user.role !== 'admin'))) {
+	return Astro.redirect('/my-scripts');
+}
+const isEdit = Boolean(editScript);
+---
+
+<AppLayout title={isEdit ? '升级脚本' : '上传脚本'}>
+	<div class="upload">
+		<h1>{isEdit ? '升级脚本' : '上传脚本'}</h1>
+		<p class="sd-muted">
+			{isEdit
+				? '重新上传脚本盒子导出的 JSON 即可升级；不选择图片则保留原有预览图。'
+				: '选择从脚本盒子导出的 JSON 文件，填写信息后即可发布。'}
+		</p>
+
+		<form id="upload-form" class="sd-card" data-mode={isEdit ? 'edit' : 'create'} data-id={editScript?.id ?? ''}>
+			<div class="field">
+				<label class="sd-label" for="script-file">脚本 JSON 文件 *</label>
+				<input class="sd-input" id="script-file" type="file" accept=".json,application/json" required />
+				<p class="hint sd-muted">在脚本盒子中右键脚本 → 导出，得到 .json 文件</p>
+			</div>
+
+			<div id="preview" class="preview" hidden>
+				<div class="row"><span class="k">名称</span><span class="v" id="p-name"></span></div>
+				<div class="row"><span class="k">作者</span><span class="v" id="p-author"></span></div>
+				<div class="row"><span class="k">版本</span><span class="v" id="p-version"></span></div>
+				<div class="row"><span class="k">类型</span><span class="v" id="p-type"></span></div>
+				<div class="row"><span class="k">匹配</span><span class="v" id="p-matches"></span></div>
+			</div>
+
+			<div class="field">
+				<label class="sd-label" for="description">简介（可选，覆盖脚本自带描述）</label>
+				<textarea class="sd-textarea" id="description" rows="3" maxlength="2000"></textarea>
+			</div>
+
+			<div class="field">
+				<label class="sd-label" for="tags">标签（可选，逗号分隔，最多 10 个）</label>
+				<input class="sd-input" id="tags" placeholder="例如：自动化, 视频下载" />
+			</div>
+
+			<div class="field">
+				<label class="sd-label" for="images">
+					{isEdit ? '预览图片（不选则保留原图，最多 2 张，每张小于 1MB）' : '预览图片（最多 2 张，每张小于 1MB）'}
+				</label>
+				<input class="sd-input" id="images" type="file" accept="image/*" multiple />
+				<div class="thumbs" id="image-preview"></div>
+			</div>
+
+			<button class="sd-btn" type="submit">{isEdit ? '保存升级' : '发布脚本'}</button>
+			<p class="msg" role="alert"></p>
+		</form>
+	</div>
+</AppLayout>
+
+<script>
+	const MAX_IMAGE_SIZE = 1024 * 1024;
+	const MAX_IMAGES = 2;
+
+	const form = document.getElementById('upload-form') as HTMLFormElement;
+	const fileInput = document.getElementById('script-file') as HTMLInputElement;
+	const imagesInput = document.getElementById('images') as HTMLInputElement;
+	const imagePreview = document.getElementById('image-preview') as HTMLDivElement;
+	const preview = document.getElementById('preview') as HTMLDivElement;
+	const descriptionInput = document.getElementById('description') as HTMLTextAreaElement;
+	const msg = form.querySelector('.msg') as HTMLParagraphElement;
+
+	let scriptText = '';
+	let images: File[] = [];
+
+	const setText = (id: string, value: string) => {
+		const el = document.getElementById(id);
+		if (el) el.textContent = value || '-';
+	};
+
+	fileInput.addEventListener('change', async () => {
+		scriptText = '';
+		preview.hidden = true;
+		msg.textContent = '';
+		const file = fileInput.files?.[0];
+		if (!file) return;
+		const text = await file.text();
+		try {
+			const obj = JSON.parse(text);
+			if (!obj || typeof obj !== 'object' || typeof obj.name !== 'string') {
+				throw new Error('invalid');
+			}
+			scriptText = text;
+			setText('p-name', obj.name);
+			setText('p-author', obj.author);
+			setText('p-version', obj.version);
+			setText('p-type', obj.type);
+			setText('p-matches', Array.isArray(obj.matches) ? obj.matches.join(', ') : '');
+			if (!descriptionInput.value && typeof obj.description === 'string') {
+				descriptionInput.value = obj.description;
+			}
+			preview.hidden = false;
+		} catch {
+			msg.textContent = 'JSON 解析失败，请确认是脚本盒子导出的文件';
+		}
+	});
+
+	const renderImages = () => {
+		imagePreview.innerHTML = '';
+		images.forEach((file) => {
+			const wrap = document.createElement('div');
+			wrap.className = 'thumb';
+			const img = document.createElement('img');
+			img.src = URL.createObjectURL(file);
+			img.alt = file.name;
+			const label = document.createElement('span');
+			label.textContent = `${(file.size / 1024).toFixed(0)} KB`;
+			wrap.append(img, label);
+			imagePreview.append(wrap);
+		});
+	};
+
+	imagesInput.addEventListener('change', () => {
+		images = [];
+		msg.textContent = '';
+		const files = Array.from(imagesInput.files ?? []);
+		if (files.length > MAX_IMAGES) {
+			msg.textContent = `最多上传 ${MAX_IMAGES} 张预览图片`;
+			imagesInput.value = '';
+			renderImages();
+			return;
+		}
+		for (const file of files) {
+			if (!file.type.startsWith('image/')) {
+				msg.textContent = '预览图片格式不正确';
+				imagesInput.value = '';
+				renderImages();
+				return;
+			}
+			if (file.size > MAX_IMAGE_SIZE) {
+				msg.textContent = `单张图片必须小于 1MB（${file.name}）`;
+				imagesInput.value = '';
+				renderImages();
+				return;
+			}
+		}
+		images = files;
+		renderImages();
+	});
+
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		msg.textContent = '';
+		if (!scriptText) {
+			msg.textContent = '请先选择有效的脚本 JSON 文件';
+			return;
+		}
+
+		const body = new FormData();
+		body.append('data', scriptText);
+		body.append('description', descriptionInput.value);
+		body.append('tags', (document.getElementById('tags') as HTMLInputElement).value);
+		images.forEach((file) => body.append('images', file));
+
+		const mode = form.dataset.mode;
+		const id = form.dataset.id;
+		const isEdit = mode === 'edit' && Boolean(id);
+		const button = form.querySelector('button') as HTMLButtonElement;
+		button.disabled = true;
+		try {
+			const res = await fetch(isEdit ? `/api/scripts/${id}` : '/api/scripts', {
+				method: isEdit ? 'PUT' : 'POST',
+				body,
+			});
+			const result = await res.json();
+			if (res.ok && result.ok) {
+				location.href = isEdit ? '/my-scripts' : `/scripts/${result.data.id}`;
+				return;
+			}
+			msg.textContent = result.message || (isEdit ? '升级失败' : '发布失败');
+		} catch {
+			msg.textContent = '网络错误，请稍后重试';
+		} finally {
+			button.disabled = false;
+		}
+	});
+</script>
+
+<style>
+	.upload {
+		max-width: 680px;
+		margin: 0 auto;
+	}
+	.upload h1 {
+		margin: 0 0 4px;
+		font-size: 24px;
+	}
+	.upload > p {
+		margin: 0 0 20px;
+		font-size: 14px;
+	}
+	form {
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+	}
+	.hint {
+		margin: 6px 0 0;
+		font-size: 12px;
+	}
+	.preview {
+		border: 1px dashed var(--sd-border);
+		border-radius: var(--sd-radius);
+		padding: 14px 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-size: 14px;
+	}
+	.row {
+		display: flex;
+		gap: 10px;
+	}
+	.row .k {
+		width: 48px;
+		color: var(--sd-muted);
+		flex-shrink: 0;
+	}
+	.thumbs {
+		display: flex;
+		gap: 10px;
+		margin-top: 10px;
+	}
+	.thumb {
+		position: relative;
+	}
+	.thumb img {
+		width: 120px;
+		height: 80px;
+		object-fit: cover;
+		border-radius: 8px;
+		border: 1px solid var(--sd-border);
+		display: block;
+	}
+	.thumb span {
+		position: absolute;
+		right: 4px;
+		bottom: 4px;
+		background: rgba(0, 0, 0, 0.6);
+		color: #fff;
+		font-size: 11px;
+		padding: 0 5px;
+		border-radius: 4px;
+	}
+	.msg {
+		min-height: 20px;
+		color: var(--sd-danger);
+		font-size: 13px;
+		margin: 0;
+	}
+</style>

@@ -1,0 +1,285 @@
+---
+export const prerender = false;
+
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getScript, getScriptImages } from '../../lib/db';
+import { getEnv } from '../../lib/utils';
+import type { ProjectItem } from '../../lib/types';
+
+const env = getEnv(Astro.locals);
+const id = Astro.params.id!;
+const script = await getScript(env, id);
+
+const isOwner = Astro.locals.user?.id === script?.user_id;
+const isAdmin = Astro.locals.user?.role === 'admin';
+if (!script || (script.status !== 'published' && !isOwner && !isAdmin)) {
+	return Astro.redirect('/scripts');
+}
+
+const images = await getScriptImages(env, id);
+
+let item: ProjectItem | null = null;
+try {
+	const object = await env.IMAGES.get(script.data_key);
+	item = object ? JSON.parse(await object.text()) : null;
+} catch {
+	item = null;
+}
+
+const code = item && typeof item.code === 'string' ? item.code : '';
+const matches = item && Array.isArray(item.matches) ? item.matches : [];
+const tags = (() => {
+	if (!script.tags) return [];
+	try {
+		const parsed = JSON.parse(script.tags);
+		return Array.isArray(parsed) ? parsed : [];
+	} catch {
+		return [];
+	}
+})();
+
+const typeLabels: Record<string, string> = {
+	content: '内容脚本',
+	window: '独立窗口',
+	sidePanel: '侧边栏',
+	editorPlugin: '编辑器扩展',
+};
+
+const rawUrl = new URL(`/api/scripts/${id}/raw`, Astro.url).href;
+const canManage = isOwner || isAdmin;
+const formatDate = (ts: number) => new Date(ts).toLocaleString('zh-CN', { hour12: false });
+---
+
+<AppLayout title={script.name} description={script.description ?? undefined}>
+	<a class="back sd-muted" href="/scripts">← 返回脚本市场</a>
+
+	<article class="detail">
+		<header class="head">
+			<div class="info">
+				<h1>{script.name}</h1>
+				<p class="sd-muted sub">
+					{script.author || '未知作者'} · v{script.version || '1.0.0'} · {typeLabels[script.script_type ?? ''] ??
+						'脚本'} · {script.downloads} 次安装
+				</p>
+				{
+					tags.length > 0 && (
+						<div class="tags">
+							{tags.map((tag) => (
+								<span class="sd-tag">{tag}</span>
+							))}
+						</div>
+					)
+				}
+			</div>
+			<div class="actions">
+				<button class="sd-btn" data-install-url={rawUrl}>安装到脚本盒子</button>
+				<a class="sd-btn sd-btn-ghost" href={rawUrl} download>下载 JSON</a>
+			</div>
+		</header>
+
+		{script.status !== 'published' && (
+			<p class="offline">该脚本已下架，仅作者与管理员可见。</p>
+		)}
+
+		<div class="tabs" role="tablist">
+			<button class="tab active" role="tab" aria-selected="true" data-tab="info">脚本描述</button>
+			<button class="tab" role="tab" aria-selected="false" data-tab="code">源码</button>
+		</div>
+
+		<section class="panel" data-panel="info" role="tabpanel">
+			<div class="block">
+				<h2>简介</h2>
+				<p class="desc">{script.description || '暂无简介'}</p>
+				{
+					item?.description && item.description !== script.description && (
+						<p class="desc sd-muted">原始描述：{item.description}</p>
+					)
+				}
+			</div>
+
+			{
+				images.length > 0 && (
+					<div class="block">
+						<h2>预览图片</h2>
+						<div class="gallery">
+							{images.map((image) => (
+								<a class="shot" href={`/api/images/${image.id}`} target="_blank" rel="noopener">
+									<img src={`/api/images/${image.id}`} alt={script.name} loading="lazy" />
+								</a>
+							))}
+						</div>
+					</div>
+				)
+			}
+
+			{
+				matches.length > 0 && (
+					<div class="block">
+						<h2>匹配网址</h2>
+						<ul class="matches">
+							{matches.map((m) => (
+								<li><code>{m}</code></li>
+							))}
+						</ul>
+					</div>
+				)
+			}
+		</section>
+
+		<section class="panel" data-panel="code" role="tabpanel" hidden>
+			<div class="block">
+				<h2>脚本源码</h2>
+				<pre class="code"><code>{code || '// 无可展示源码'}</code></pre>
+			</div>
+		</section>
+
+		<footer class="foot sd-muted">
+			<span>发布时间：{formatDate(script.created_at)}</span>
+			{script.updated_at && <span>更新时间：{formatDate(script.updated_at)}</span>}
+			{canManage && <a href="/admin/scripts">在管理后台管理</a>}
+		</footer>
+	</article>
+</AppLayout>
+
+<script>
+	const tabs = document.querySelectorAll<HTMLButtonElement>('.tab');
+	tabs.forEach((tab) => {
+		tab.addEventListener('click', () => {
+			const name = tab.dataset.tab;
+			tabs.forEach((t) => {
+				const active = t === tab;
+				t.classList.toggle('active', active);
+				t.setAttribute('aria-selected', String(active));
+			});
+			document.querySelectorAll<HTMLElement>('.panel').forEach((panel) => {
+				panel.hidden = panel.dataset.panel !== name;
+			});
+		});
+	});
+</script>
+
+<style>
+	.back {
+		display: inline-block;
+		margin-bottom: 16px;
+		font-size: 14px;
+	}
+	.head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+	.head h1 {
+		margin: 0 0 6px;
+		font-size: 26px;
+	}
+	.sub {
+		margin: 0;
+		font-size: 14px;
+	}
+	.tags {
+		display: flex;
+		gap: 6px;
+		margin-top: 10px;
+		flex-wrap: wrap;
+	}
+	.actions {
+		display: flex;
+		gap: 10px;
+	}
+	.offline {
+		background: #fff4e5;
+		color: #8a5300;
+		padding: 10px 14px;
+		border-radius: 8px;
+		margin: 18px 0 0;
+	}
+	.tabs {
+		display: flex;
+		gap: 4px;
+		border-bottom: 1px solid var(--sd-border);
+		margin: 20px 0 4px;
+	}
+	.tab {
+		padding: 8px 16px;
+		background: none;
+		border: none;
+		border-bottom: 2px solid transparent;
+		color: var(--sd-muted);
+		font-size: 14px;
+		font-family: inherit;
+		cursor: pointer;
+	}
+	.tab:hover {
+		color: var(--sd-fg);
+	}
+	.tab.active {
+		color: var(--sd-fg);
+		border-bottom-color: var(--sd-primary);
+		font-weight: 600;
+	}
+	.panel {
+		padding-top: 4px;
+	}
+	.gallery {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+	}
+	.shot {
+		display: block;
+	}
+	.shot img {
+		width: 100%;
+		border-radius: var(--sd-radius);
+		border: 1px solid var(--sd-border);
+		display: block;
+		transition: border-color 0.15s;
+	}
+	.shot:hover img {
+		border-color: var(--sd-primary);
+	}
+	@media (max-width: 640px) {
+		.gallery {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.block {
+		margin: 24px 0;
+	}
+	.block h2 {
+		font-size: 16px;
+		margin: 0 0 10px;
+	}
+	.desc {
+		margin: 0 0 6px;
+		white-space: pre-wrap;
+	}
+	.matches {
+		margin: 0;
+		padding-left: 18px;
+	}
+	.matches code {
+		font-size: 13px;
+	}
+	.code {
+		background: var(--sd-soft);
+		border: 1px solid var(--sd-border);
+		border-radius: var(--sd-radius);
+		padding: 16px;
+		overflow: auto;
+		max-height: 520px;
+		font-size: 13px;
+		line-height: 1.5;
+	}
+	.foot {
+		display: flex;
+		gap: 18px;
+		flex-wrap: wrap;
+		border-top: 1px solid var(--sd-border);
+		padding-top: 16px;
+		font-size: 13px;
+	}
+</style>

@@ -1,0 +1,104 @@
+---
+export const prerender = false;
+
+import AppLayout from '../layouts/AppLayout.astro';
+
+if (Astro.locals.user) return Astro.redirect('/');
+---
+
+<AppLayout title="注册">
+	<div class="auth sd-card">
+		<h1>注册</h1>
+		<p class="sd-muted">使用邮箱注册账号，暂时无需验证邮箱。</p>
+		<form>
+			<label class="sd-label" for="email">邮箱</label>
+			<input class="sd-input" id="email" name="email" type="email" autocomplete="email" required />
+			<label class="sd-label" for="nickname">昵称（可选）</label>
+			<input class="sd-input" id="nickname" name="nickname" type="text" maxlength="30" />
+			<label class="sd-label" for="password">密码（至少 6 位）</label>
+			<input
+				class="sd-input"
+				id="password"
+				name="password"
+				type="password"
+				autocomplete="new-password"
+				minlength="6"
+				required
+			/>
+			<button class="sd-btn" type="submit">注册</button>
+			<p class="msg" role="alert"></p>
+		</form>
+		<p class="sd-muted switch">已有账号？<a href="/login">直接登录</a></p>
+	</div>
+</AppLayout>
+
+<script>
+	const form = document.querySelector<HTMLFormElement>('form')!;
+	const msg = form.querySelector<HTMLParagraphElement>('.msg')!;
+	form.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		msg.textContent = '';
+		const data = new FormData(form);
+		const button = form.querySelector('button')!;
+		button.disabled = true;
+		try {
+			const res = await fetch('/api/auth/register', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					email: data.get('email'),
+					password: data.get('password'),
+					nickname: data.get('nickname'),
+				}),
+			});
+			const result = await res.json();
+			if (res.ok && result.ok) {
+				location.href = '/upload';
+				return;
+			}
+			msg.textContent = result.message || '注册失败';
+		} catch {
+			msg.textContent = '网络错误，请稍后重试';
+		} finally {
+			button.disabled = false;
+		}
+	});
+</script>
+
+<style>
+	.auth {
+		max-width: 420px;
+		margin: 40px auto;
+		padding: 28px;
+	}
+	.auth h1 {
+		margin: 0 0 4px;
+		font-size: 22px;
+	}
+	.auth p {
+		margin: 0 0 18px;
+		font-size: 14px;
+	}
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	form .sd-btn {
+		margin-top: 12px;
+	}
+	.msg {
+		min-height: 20px;
+		color: var(--sd-danger);
+		font-size: 13px;
+		margin: 0;
+	}
+	.switch {
+		text-align: center;
+		font-size: 13px;
+		margin: 18px 0 0 !important;
+	}
+	.switch a {
+		color: var(--sd-primary);
+	}
+</style>
