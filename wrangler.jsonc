@@ -22,7 +22,7 @@
 			"binding": "DB",
 			"database_name": "script-dog-doc",
 			"database_id": "a3b592cb-660f-4094-ad2b-cc70f86e081c",
-			"remote": false
+			"remote": true
 		}
 	],
 	// R2 桶：执行 `npx wrangler r2 bucket create <名称>` 创建
@@ -30,7 +30,7 @@
 		{
 			"binding": "IMAGES",
 			"bucket_name": "script-dog-files",
-			"remote": false
+			"remote": true
 		}
 	],
 	// Astro Cloudflare 适配器会自动启用 sessions，需要 SESSION KV 绑定

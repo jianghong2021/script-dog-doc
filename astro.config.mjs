@@ -12,7 +12,7 @@ export default defineConfig({
 			enabled: true,
 			configPath: './wrangler.jsonc',
 			// 本地开发强制使用本地模拟绑定，避免默认走远程绑定导致 D1 丢失
-			remoteBindings: false,
+			remoteBindings: true,
 		},
 	}),
 	integrations: [
