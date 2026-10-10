@@ -37,7 +37,8 @@
 	// 首次 `wrangler deploy` 时 Wrangler 会自动创建（自动预置）
 	"kv_namespaces": [
 		{
-			"binding": "SESSION"
+			"binding": "SESSION",
+			"id": "3b15e2ebfba74723a28eb96fa19c4f4a"
 		}
 	]
 }
