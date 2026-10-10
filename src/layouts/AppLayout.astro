@@ -20,6 +20,19 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 		<meta name="description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title} - 脚本盒子</title>
+		<script is:inline>
+			(function () {
+				try {
+					var mode = localStorage.getItem('sd-theme') || 'auto';
+					var dark =
+						mode === 'dark' ||
+						(mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+					document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+				} catch (e) {
+					document.documentElement.dataset.theme = 'light';
+				}
+			})();
+		</script>
 	</head>
 	<body>
 		<header class="sd-header">
@@ -36,6 +49,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 					{user?.role === 'admin' && <a href="/admin" class:list={[{ active: isActive('/admin') }]}>管理后台</a>}
 				</nav>
 				<div class="sd-auth">
+					<button class="sd-btn sd-btn-ghost sd-theme-btn" type="button" data-theme-toggle aria-label="切换主题">
+						自动
+					</button>
 					{
 						user ? (
 							<>
@@ -88,8 +104,47 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 			})();
 		</script>
 
+		<script is:inline>
+			(function () {
+				var key = 'sd-theme';
+				var modes = ['auto', 'light', 'dark'];
+				var labels = { auto: '自动', light: '浅色', dark: '深色' };
+				var btn = document.querySelector('[data-theme-toggle]');
+				function current() {
+					try {
+						return localStorage.getItem(key) || 'auto';
+					} catch (e) {
+						return 'auto';
+					}
+				}
+				function apply(mode) {
+					var dark =
+						mode === 'dark' ||
+						(mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+					document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+					if (btn) btn.textContent = labels[mode];
+				}
+				if (btn) {
+					btn.addEventListener('click', function () {
+						var next = modes[(modes.indexOf(current()) + 1) % modes.length];
+						try {
+							localStorage.setItem(key, next);
+						} catch (e) {}
+						apply(next);
+					});
+				}
+				apply(current());
+				try {
+					window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+						if (current() === 'auto') apply('auto');
+					});
+				} catch (e) {}
+			})();
+		</script>
+
 		<style is:global>
 			:root {
+				color-scheme: light;
 				--sd-bg: #ffffff;
 				--sd-fg: #1f2328;
 				--sd-muted: #656d76;
@@ -101,16 +156,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 				--sd-danger: #cf222e;
 				--sd-radius: 10px;
 			}
-			@media (prefers-color-scheme: dark) {
-				:root {
-					--sd-bg: #0d1117;
-					--sd-fg: #e6edf3;
-					--sd-muted: #9198a1;
-					--sd-border: #30363d;
-					--sd-card: #161b22;
-					--sd-soft: #161b22;
-					--sd-primary: #6366f1;
-				}
+			:root[data-theme='dark'] {
+				color-scheme: dark;
+				--sd-bg: #0d1117;
+				--sd-fg: #e6edf3;
+				--sd-muted: #9198a1;
+				--sd-border: #30363d;
+				--sd-card: #161b22;
+				--sd-soft: #161b22;
+				--sd-primary: #6366f1;
 			}
 			* {
 				box-sizing: border-box;
